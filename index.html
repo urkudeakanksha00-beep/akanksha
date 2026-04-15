@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akanksha – 3D visulizer/interior Designer</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --orange: #e8622a;
+    --bg: #111111;
+    --card: #1a1a1a;
+    --card2: #222222;
+    --text: #ffffff;
+    --muted: #aaaaaa;
+    --border: #2a2a2a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; scroll-behavior:smooth; }
+  body { font-family:'Poppins',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; width:100%; z-index:999;
+    background:#0d0d0d; display:flex; align-items:center;
+    justify-content:space-between; padding:14px 60px;
+    border-bottom:1px solid var(--border);
+  }
+  .logo { font-size:1.4rem; font-weight:800; color:var(--orange); letter-spacing:1px; }
+  .nav-links { display:flex; gap:30px; list-style:none; }
+  .nav-links a { color:var(--muted); text-decoration:none; font-size:.85rem; font-weight:500; transition:color .3s; }
+  .nav-links a:hover { color:var(--orange); }
+  .hire-btn-nav { background:var(--orange); color:#fff; border:none; padding:9px 22px; border-radius:6px; font-size:.85rem; font-weight:600; cursor:pointer; transition:opacity .3s; }
+  .hire-btn-nav:hover { opacity:.85; }
+
+  /* HERO */
+  #home {
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:100px 80px 60px;
+    position:relative; overflow:hidden; background:var(--bg);
+    gap:40px;
+  }
+  /* White radial grid */
+  #home::before {
+    content:''; position:absolute; inset:0; z-index:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.13) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.13) 1px, transparent 1px);
+    background-size:52px 52px;
+    mask-image:radial-gradient(ellipse 65% 65% at 50% 50%, black 0%, transparent 100%);
+    -webkit-mask-image:radial-gradient(ellipse 65% 65% at 50% 50%, black 0%, transparent 100%);
+  }
+  /* Warm glow */
+  #home::after {
+    content:''; position:absolute; inset:0; z-index:0;
+    background:radial-gradient(ellipse 40% 50% at 75% 50%, rgba(232,98,42,0.07) 0%, transparent 70%);
+  }
+
+
+
+  /* hero layout */
+  .hero-left { flex:1; max-width:500px; z-index:2; }
+  .hero-left .greeting {
+    display:inline-flex; align-items:center; gap:8px;
+    color:var(--muted); font-size:.88rem; margin-bottom:14px;
+    background:rgba(255,255,255,0.04); border:1px solid var(--border);
+    padding:6px 14px; border-radius:30px; letter-spacing:.5px;
+  }
+  .hero-left .greeting::before { content:'👋'; font-size:1rem; }
+  .hero-left h1 { font-size:4.2rem; font-weight:800; line-height:1.05; margin-bottom:10px; }
+  .hero-left h1 span { color:var(--orange); display:block; }
+  .hero-left .role {
+    color:var(--orange); font-size:1.1rem; font-weight:500; margin-bottom:16px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .hero-left .role::before { content:''; width:32px; height:2px; background:var(--orange); border-radius:2px; }
+  .hero-left .tagline { color:var(--muted); font-size:.9rem; line-height:1.7; margin-bottom:30px; max-width:440px; }
+
+  .hero-btns { display:flex; gap:14px; margin-bottom:36px; flex-wrap:wrap; }
+  .btn-primary { background:var(--orange); color:#fff; border:none; padding:13px 30px; border-radius:8px; font-size:.9rem; font-weight:600; cursor:pointer; transition:opacity .3s,transform .2s; }
+  .btn-primary:hover { opacity:.85; transform:translateY(-1px); }
+  .btn-outline { background:transparent; color:var(--text); border:2px solid var(--border); padding:13px 30px; border-radius:8px; font-size:.9rem; font-weight:600; cursor:pointer; transition:border-color .3s,color .3s; }
+  .btn-outline:hover { border-color:var(--orange); color:var(--orange); }
+
+  .stats { display:flex; gap:0; margin-bottom:30px; border:1px solid var(--border); border-radius:12px; overflow:hidden; width:fit-content; }
+  .stat-item { text-align:center; padding:16px 28px; position:relative; }
+  .stat-item:not(:last-child)::after { content:''; position:absolute; right:0; top:20%; height:60%; width:1px; background:var(--border); }
+  .stat-num { font-size:2rem; font-weight:800; color:var(--orange); line-height:1; }
+  .stat-label { font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+
+  .social-bar { display:flex; gap:10px; }
+  .social-bar a { width:38px; height:38px; border-radius:10px; background:var(--card2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:.95rem; text-decoration:none; transition:all .3s; }
+  .social-bar a:hover { background:var(--orange); color:#fff; border-color:var(--orange); transform:translateY(-2px); }
+
+  /* hero right — photo card */
+  .hero-right {
+    position:relative; z-index:2; flex-shrink:0;
+    width:380px; height:460px;
+    background:var(--card2);
+    border-radius:220px 220px 0 0;
+    display:flex; align-items:flex-end; justify-content:center;
+    overflow:hidden; border:2px solid var(--border);
+  }
+  /* orange glow ring */
+  .hero-right::before {
+    content:''; position:absolute; inset:-4px;
+    border-radius:220px 220px 0 0;
+    border:2px solid rgba(232,98,42,0.3);
+    pointer-events:none; z-index:3;
+  }
+  .hero-right .placeholder-img { width:100%; height:95%; background:linear-gradient(180deg,#2a1a0e 0%,#1a1a1a 100%); display:flex; align-items:center; justify-content:center; font-size:7rem; color:#3a2a1a; }
+
+  /* tools strip below hero-right */
+  .tools-used {
+    position:absolute; bottom:-1px; left:0; right:0; z-index:3;
+    background:rgba(13,13,13,0.95); border-top:1px solid var(--border);
+    display:flex; justify-content:center; align-items:center; gap:14px; padding:10px 0;
+  }
+  .tools-used img { width:26px; height:26px; object-fit:contain; opacity:.75; filter:grayscale(20%); transition:opacity .3s; }
+  .tools-used img:hover { opacity:1; }
+
+  /* SECTION BASE */
+  section { padding:90px 60px; }
+  .section-title { text-align:center; font-size:2.2rem; font-weight:800; margin-bottom:8px; }
+  .section-sub { text-align:center; color:var(--muted); font-size:.85rem; margin-bottom:50px; }
+  .orange-line { width:50px; height:3px; background:var(--orange); margin:10px auto 50px; border-radius:2px; }
+
+  /* ABOUT */
+  #about { background:#0f0f0f; }
+  .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+  .about-img-box { width:100%; aspect-ratio:1; background:var(--card2); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:8rem; color:#2a2a2a; border:2px solid var(--border); }
+  .about-text p { color:var(--muted); line-height:1.9; font-size:.9rem; margin-bottom:20px; }
+  .skills-section { margin-top:50px; }
+  .skill-row { margin-bottom:18px; }
+  .skill-label { display:flex; justify-content:space-between; font-size:.85rem; margin-bottom:6px; }
+  .skill-bar { background:var(--border); border-radius:20px; height:8px; }
+  .skill-fill { height:100%; border-radius:20px; background:var(--orange); width:0; transition:width 1.2s ease; }
+
+  /* EXPERIENCE */
+  #experience { background:var(--bg); }
+  .exp-grid { display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+  .exp-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:30px; transition:border-color .3s,transform .3s; }
+  .exp-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .exp-company { font-size:1.2rem; font-weight:700; color:var(--orange); margin-bottom:4px; }
+  .exp-role { font-size:.9rem; font-weight:600; margin-bottom:4px; }
+  .exp-period { font-size:.78rem; color:var(--muted); margin-bottom:16px; }
+  .exp-duties { list-style:disc; padding-left:18px; color:var(--muted); font-size:.85rem; }
+  .exp-duties li { margin-bottom:8px; line-height:1.6; }
+
+  /* EDUCATION */
+  #education { background:#0f0f0f; }
+  .edu-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .edu-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:28px 24px; transition:border-color .3s,transform .3s; }
+  .edu-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .edu-degree { font-size:1rem; font-weight:700; color:var(--orange); margin-bottom:8px; }
+  .edu-school { font-size:.85rem; color:var(--muted); margin-bottom:4px; }
+  .edu-year { font-size:.8rem; color:#777; }
+
+  /* TYPE TABS (3D )*/
+  .type-tabs { display:flex; gap:14px; justify-content:center; margin-bottom:20px; }
+  .type-tab {
+    padding:11px 32px; border-radius:10px; font-size:.92rem; font-weight:700;
+    cursor:pointer; border:2px solid var(--border); background:var(--card);
+    color:var(--muted); transition:all .3s; display:flex; align-items:center; gap:8px; letter-spacing:.5px;
+  }
+  .type-tab.active { background:var(--orange); color:#fff; border-color:var(--orange); }
+  .type-tab:not(.active):hover { border-color:var(--orange); color:var(--orange); }
+
+  /* PORTFOLIO */
+  #portfolio { background:var(--bg); }
+  .filter-tabs { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:40px; }
+  .tab { padding:8px 20px; border-radius:30px; font-size:.82rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--card); color:var(--muted); transition:all .3s; }
+  .tab.active,.tab:hover { background:var(--orange); color:#fff; border-color:var(--orange); }
+  .portfolio-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .portfolio-item { position:relative; border-radius:12px; overflow:hidden; aspect-ratio:1; background:var(--card2); border:1px solid var(--border); cursor:pointer; transition:transform .3s,border-color .3s; display:none; }
+  .portfolio-item.visible { display:block; }
+  .portfolio-item:hover { transform:scale(1.03); border-color:var(--orange); }
+  .portfolio-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:2.8rem; gap:10px; background:linear-gradient(135deg,#1e1e1e 0%,#2a2a2a 100%); color:#3a3a3a; }
+  .portfolio-placeholder small { font-size:.72rem; color:#555; }
+  .portfolio-label { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(0,0,0,.9)); padding:28px 12px 10px; font-size:.78rem; font-weight:600; color:#ddd; text-align:center; }
+  .zoom-icon { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); width:52px; height:52px; border-radius:50%; background:rgba(232,98,42,.9); display:grid; place-items:center; font-size:1.2rem; color:#fff; transition:transform .25s ease; pointer-events:none; }
+  .portfolio-item:hover .zoom-icon { transform:translate(-50%,-50%) scale(1); }
+
+  /* LIGHTBOX */
+  .lightbox { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.96); align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+  .lightbox.open { display:flex; }
+  .lightbox-content { border-radius:12px; overflow:hidden; border:1px solid var(--border); background:var(--card2); display:inline-flex; align-items:center; justify-content:center; }
+  .lightbox-content img { display:block; max-width:90vw; max-height:85vh; width:auto; height:auto; object-fit:none; }
+  .lb-placeholder { display:flex; flex-direction:column; align-items:center; gap:16px; padding:60px 80px; }
+  .lb-placeholder i { font-size:5rem; color:#333; }
+  .lb-placeholder p { font-size:.88rem; color:var(--muted); text-align:center; }
+  .lb-placeholder small { color:#555; font-size:.75rem; }
+  .lightbox-label { color:#ccc; font-size:1rem; font-weight:600; }
+  .lightbox-close { position:fixed; top:22px; right:28px; font-size:1.8rem; color:var(--muted); cursor:pointer; z-index:10000; transition:color .3s; }
+  .lightbox-close:hover { color:var(--orange); }
+
+  /* SHOWREEL */
+  #showreel { background:#0a0a0a; }
+  .showreel-intro { text-align:center; color:var(--muted); font-size:.88rem; max-width:520px; margin:0 auto 50px; line-height:1.9; }
+  .showreel-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+  .video-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:border-color .3s,transform .3s; }
+  .video-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .video-wrapper { position:relative; width:100%; padding-top:56.25%; background:#000; }
+  .video-wrapper video,.video-wrapper iframe { position:absolute; inset:0; width:100%; height:100%; border:none; display:block; }
+  .video-info { padding:16px 18px 20px; }
+  .video-label { font-size:.95rem; font-weight:600; color:var(--text); }
+  .video-desc { font-size:.8rem; color:#555; margin-top:6px; }
+
+  /* CONTACT */
+  #contact { background:#0f0f0f; }
+  .contact-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:700px; margin:0 auto; }
+  .contact-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; transition:border-color .3s; }
+  .contact-card:hover { border-color:var(--orange); }
+  .contact-icon { font-size:1.6rem; color:var(--orange); }
+  .contact-info { font-size:.82rem; color:var(--muted); word-break:break-word; }
+  .contact-title { font-size:.85rem; font-weight:600; }
+
+  /* FOOTER */
+  footer { text-align:center; padding:30px; border-top:1px solid var(--border); color:var(--muted); font-size:.8rem; }
+  footer span { color:var(--orange); }
+
+  /* RESPONSIVE */
+  @media(max-width:900px){
+    nav{padding:12px 20px;}
+    .nav-links{display:none;}
+    section{padding:60px 20px;}
+    #home{flex-direction:column;text-align:center;padding:100px 20px 50px;gap:40px;}
+    .hero-left h1{font-size:2.4rem;}
+    .hero-btns,.stats,.social-bar{justify-content:center;}
+    .hero-right{width:260px;height:300px;}
+    .about-grid,.exp-grid{grid-template-columns:1fr;}
+    .edu-grid{grid-template-columns:1fr;}
+    .portfolio-grid{grid-template-columns:repeat(2,1fr);}
+    .showreel-grid{grid-template-columns:1fr;}
+    .contact-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Akanksha Urkude</div>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About me</a></li>
+    <li><a href="#experience">Work Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#showreel">Showreel</a></li>
+    <li><a href="#contact">Contact me</a></li>
+  </ul>
+  <button class="hire-btn-nav" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Hire Me</button>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+
+  <div class="hero-left">
+    <p class="greeting">Hi I am</p>
+    <h1>Akanksha<span>Urkude</span></h1>
+    <p class="role">Interior Designer</p>
+    <p class="tagline">A budding interior designer who believes every space tells a story. With fresh ideas, practical internship experience, and skills in 3D design, I aim to transform concepts into visually stunning and functional environments.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Hire Me</button>
+      <button class="btn-outline"onclick="window.open('Resume.png')">Download CV</button>
+    </div>
+    <div class="stats">
+      <div class="stat-item"><div class="stat-num">0.3</div><div class="stat-label">Years Experience</div></div>
+      <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Projects Done</div></div>
+      
+    </div>
+    <div class="social-bar">
+      <a href="https://www.instagram.com/__.artsy.______?igsh=MTdzZGRqdzJjbTU2eQ=="><i class="fab fa-instagram"></i></a>
+      <a href="https://www.linkedin.com/in/akanksha-urkude-407ba3278?utm_source=share_via&utm_content=profile&utm_medium=member_android"><i class="fab fa-linkedin-in"></i></a>
+      
+    </div>
+  </div>
+
+  <div class="hero-right">
+ <!-- Profile Image -->
+    <div class="profile-card">
+        <img src="profile.png" alt="Profile Photo"
+        style="
+        width:450px;
+        height:470px;
+        object-fit:cover;
+        object-position: top center;
+        border-radius:15px;
+        ">
+    </div>
+
+
+        <!-- Tools strip at bottom of photo card -->
+    <div class="tools-used">
+      <!-- SketchUp -->
+      <img src="sketchup.png" alt="SketchUp" title="SketchUp"
+           onerror="this.outerHTML='<span title=\'SketchUp\' style=\'font-size:.90rem;color:#aaa;font-weight:700\'>SU</span>'">
+      <!-- AutoCAD -->
+      <img src="Autocad.png" alt="AutoCAD" title="AutoCAD"
+           onerror="this.outerHTML='<span title=\'AutoCAD\' style=\'font-size:.40rem;color:#e74c3c;font-weight:700\'>CAD</span>'">
+      <!-- Photoshop -->
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Adobe_Photoshop_CS6_icon.svg/64px-Adobe_Photoshop_CS6_icon.svg.png" alt="Photoshop" title="Photoshop"
+           onerror="this.outerHTML='<span title=\'Photoshop\' style=\'font-size:.65rem;color:#31a8ff;font-weight:700\'>Ps</span>'">
+      <!-- Illustrator -->
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Adobe_Illustrator_CC_icon.svg/64px-Adobe_Illustrator_CC_icon.svg.png" alt="Illustrator" title="Illustrator"
+           onerror="this.outerHTML='<span title=\'Illustrator\' style=\'font-size:.65rem;color:#ff9a00;font-weight:700\'>Ai</span>'">
+      <!-- Premiere -->
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Adobe_Premiere_Pro_CC_icon.svg/64px-Adobe_Premiere_Pro_CC_icon.svg.png" alt="Premiere" title="Premiere"
+           onerror="this.outerHTML='<span title=\'Premiere\' style=\'font-size:.65rem;color:#9999ff;font-weight:700\'>Pr</span>'">
+    </div>
+  </div>
+
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <h2 class="section-title">About Me</h2>
+  <p class="section-sub">Passionate interior designer with experience in residential and modular design.</p>
+  <div class="orange-line"></div>
+  <div class="about-grid">
+    <div class="profile-card">
+        <img src="profile.png" alt="Profile Photo"
+        style="
+        width:650px;
+        height:750px;
+        object-fit:cover;
+        object-position: top center;
+        border-radius:15px;
+        ">
+    </div>
+
+    <div class="about-text">
+      <p>I'm an interior designer and 3D visualizer. I specialize in creating functional, modern, and client-friendly spaces supported by clear and detailed 2D and 3D concepts. My approach focuses on blending creativity with practical solutions that enhance comfort, usability, and everyday living.</p>
+      <p>I create realistic 3D interiors, product models, and cinematic visualizations with professional lighting and detailing.</p>
+      <button class="btn-primary"onclick="window.open('Resume.png')">Download CV</button>
+
+      <div class="skills-section">
+        <div class="skill-row"><div class="skill-label"><span>Sketchup</span><span>80%</span></div><div class="skill-bar"><div class="skill-fill" data-width="80"></div></div></div>
+        <div class="skill-row"><div class="skill-label"><span>Autocad</span><span>70%</span></div><div class="skill-bar"><div class="skill-fill" data-width="70"></div></div></div>
+        <div class="skill-row"><div class="skill-label"><span>Adobe Photoshop</span><span>60%</span></div><div class="skill-bar"><div class="skill-fill" data-width="60"></div></div></div>
+        <div class="skill-row"><div class="skill-label"><span>Adobe Illustrator</span><span>60%</span></div><div class="skill-bar"><div class="skill-fill" data-width="60"></div></div></div>
+        <div class="skill-row"><div class="skill-label"><span>Adobe Premiere</span><span>70%</span></div><div class="skill-bar"><div class="skill-fill" data-width="70"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK EXPERIENCE -->
+<section id="experience">
+  <h2 class="section-title">Work Experience</h2>
+  <p class="section-sub">A snapshot of my professional journey, roles, and responsibilities.</p>
+  <div class="orange-line"></div>
+  <div class="exp-grid">
+    <div class="exp-card">
+      <div class="exp-company">BMK ARCHITECTS STUDIO</div>
+      <div class="exp-role">Interior Designer</div>
+      <div class="exp-period">Feb 2026 – Present</div>
+      <ul class="exp-duties">
+        <li>Designing modular kitchens and residential furniture layouts.</li>
+        <li>Creating functional 2D &amp; 3D designs with accurate measurements.</li>
+        <li>Work with the design team on residential interior projects.</li>
+        <li>Prepare concept design and mood boards.</li>
+      </ul>
+    </div>
+<div class="exp-card">
+      <div class="exp-company">+</div>
+      <div class="exp-role">Interior Designer</div>
+      <div class="exp-period">Future</div>
+      <ul class="exp-duties">
+             </ul>
+    </div>
+
+    </section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <h2 class="section-title">Education</h2>
+  <p class="section-sub">Academic background that shaped my design knowledge and skills.</p>
+  <div class="orange-line"></div>
+  <div class="edu-grid">
+    <div class="edu-card"><div class="edu-degree">BSc In Animation</div><div class="edu-school">MIT Art's, Commerce &amp; Science College</div><div class="edu-year">2023 / 2026</div></div>
+    <div class="edu-card"><div class="edu-degree">Art Diploma(ATD)</div><div class="edu-school">Dnyanesh Chitrakala Mahavidyalay Navargoa, Chandrapur</div><div class="edu-year">2021 / 2023</div></div>
+    <div class="edu-card"><div class="edu-degree">HSC</div><div class="edu-school">shivaji Jr. Clg. Gadchiroli – 442605</div><div class="edu-year">2020 / 2021</div></div>
+    <div class="edu-card"><div class="edu-degree">SSC</div><div class="edu-school">Shivaji high school, Gadchiroli – 442605</div><div class="edu-year">2018 / 2019</div></div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <h2 class="section-title">Portfolio</h2>
+  <div class="orange-line" style="margin-bottom:30px"></div>
+
+  <!-- Level 1: 3D -->
+  <div class="type-tabs">
+    <div class="type-tab active" data-type="3d"><i class="fas fa-cube"></i> 3D Designs</div>
+      </div>
+
+  <!-- Level 2: category sub-tabs -->
+  <div class="filter-tabs" id="subTabs">
+    <div class="tab active" data-filter="all">All Sketchup Work</div>
+    <div class="tab" data-filter="living">Living Room</div>
+    <div class="tab" data-filter="master">Bedroom</div>
+        <div class="tab" data-filter="kitchen">Kitchen</div>
+  </div>
+
+  <div class="portfolio-grid" id="portfolioGrid">
+
+    <!-- ───── 3D DESIGNS ───── -->
+    <!-- 3D · Living Room -->
+    <div class="portfolio-item visible" data-type="3d" data-cat="living" onclick="openLightbox(this)">
+       <!-- Project Image -->
+  <img src="tv 1.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+      <div class="zoom-icon"onclick="openLightbox(this)"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">TV Unit</div>
+    </div> 
+     
+    <div class="portfolio-item visible" data-type="3d" data-cat="living" onclick="openLightbox(this)">
+     <img src="sofa (1).png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Living Room Sitting Area</div>
+    </div>
+    <div class="portfolio-item visible" data-type="3d" data-cat="living" onclick="openLightbox(this)">
+       <img src="tv 2.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">TV Unit + Mandir</div>
+    </div>
+    <div class="portfolio-item visible" data-type="3d" data-cat="living" onclick="openLightbox(this)">
+       <img src="mandir.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Mandir+Dining Area</div>
+    </div>
+
+    <!-- 3D · Master Bedroom -->
+    <div class="portfolio-item visible" data-type="3d" data-cat="master" onclick="openLightbox(this)">
+      <img src="bed 4.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Master Bedroom</div>
+    </div>
+    <div class="portfolio-item visible" data-type="3d" data-cat="master" onclick="openLightbox(this)">
+       <img src="bed 2.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Bedroom</div>
+    </div>
+    <div class="portfolio-item visible" data-type="3d" data-cat="master" onclick="openLightbox(this)">
+      <img src="wardrobe 2.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label"> Bedroom Wardrobe</div>
+    </div>
+
+        <div class="portfolio-item visible" data-type="3d" data-cat="master" onclick="openLightbox(this)">
+       <img src="bed 3.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Bed Room 2</div>
+    </div>
+    <div class="portfolio-item visible" data-type="3d" data-cat="master" onclick="openLightbox(this)">
+       <img src="wardrobe 1.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Room Wardrobe 2</div>
+    </div>
+    <div class="portfolio-item visible" data-type="3d" data-cat="master" onclick="openLightbox(this)">
+       <img src="bed 1.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Bed Room 2</div>
+    </div>
+
+    <!-- 3D · Kitchen -->
+    <div class="portfolio-item visible" data-type="3d" data-cat="kitchen" onclick="openLightbox(this)">
+       <img src="Kitchen 4.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Acrylic Kitchen</div>
+    </div>
+    <div class="portfolio-item visible" data-type="3d" data-cat="kitchen" onclick="openLightbox(this)">
+       <img src="Kitchen 1.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Acrylic + Laminate Kitchen</div>
+    </div>
+    <div class="portfolio-item visible" data-type="3d" data-cat="kitchen" onclick="openLightbox(this)">
+       <img src="Kitchen 2.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Italian Kitchen</div>
+    </div>
+    <div class="portfolio-item visible" data-type="3d" data-cat="kitchen" onclick="openLightbox(this)">
+       <img src="Kitchen 3.png" alt="Living Room Design"
+  style="width:100%; height:100%; object-fit:contain;background:#000; border-radius:10px;">
+
+      <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+      <div class="portfolio-label">Laminate Kitchen </div>
+    </div>
+
+      </div>
+</section>
+
+<!-- LIGHTBOX -->
+<style>
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.lightbox.open {
+  display: flex;
+}
+
+/* ✅ FIXED CONTAINER */
+.lightbox-content {
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔥 MAIN FIX (FULL IMAGE SHOW) */
+.lightbox-content img {
+  max-width: 95vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+/* optional styles */
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.lightbox-label {
+  color: #ccc;
+  margin-top: 10px;
+}
+</style>
+
+
+<div class="lightbox" id="lightbox" onclick="closeLightboxBg(event)">
+  
+  <span class="lightbox-close" onclick="closeLightbox()">✖</span>
+
+  <div class="lightbox-content" id="lightboxContent">
+    <div class="lb-placeholder">
+      <p>Image preview</p>
+    </div>
+  </div>
+
+  <div class="lightbox-label" id="lightboxLabel"></div>
+</div>
+
+
+<script>
+function openLightbox(el) {
+  const img = el.querySelector("img");
+  const lbContent = document.getElementById("lightboxContent");
+
+  if (!img) return;
+
+  /* 🔥 Replace placeholder with FULL image */
+  lbContent.innerHTML = `<img src="${img.src}" alt="">`;
+
+  document.getElementById("lightbox").classList.add("open");
+}
+
+function closeLightbox() {
+  document.getElementById("lightbox").classList.remove("open");
+}
+
+/* click outside to close */
+function closeLightboxBg(e) {
+  if (e.target.id === "lightbox") {
+    closeLightbox();
+  }
+}
+</script>
+<!-- SHOWREEL -->
+<section id="showreel">
+  <h2 class="section-title">Showreel</h2>
+  <p class="section-sub">A visual journey through my design work.</p>
+  <div class="orange-line"></div>
+  <p class="showreel-intro">Watch my design process and finished projects come to life.</p>
+  <div class="showreel-grid">
+
+    <!-- Video 1 — src madhe tumcha video file path/URL taka -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <video controls>
+          <source src="Showreel output 1.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="video-info">
+        <div class="video-label">Showreel</div>
+        <p class="video-desc">All Work Showreel</p>
+      </div>
+    </div>
+
+    <!-- Video 2 — src madhe tumcha video file path/URL taka -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <video controls>
+          <source src="Akanksha.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="video-info">
+        <div class="video-label">Showreel</div>
+        <p class="video-desc">Interior Design Showreel</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <h2 class="section-title">Contact Me</h2>
+  <div class="orange-line"></div>
+  <div class="contact-grid">
+    <div class="contact-card"><div class="contact-icon"><i class="fas fa-envelope"></i></div><div class="contact-title">Email</div><div class="contact-info">urkudeakanksha00@gmail.com</div></div>
+    <div class="contact-card"><div class="contact-icon"><i class="fas fa-phone"></i></div><div class="contact-title">Phone</div><div class="contact-info">+91 8805637114</div></div>
+    <div class="contact-card"><div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div><div class="contact-title">Address</div><div class="contact-info">Alandi, Pune – 412105</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer><p>Thank You &nbsp;|&nbsp; Designed by <span>Akanksha Urkude</span></p></footer>
+
+<script>
+/* PORTFOLIO FILTER — 2-level: type (3d/2d) + category */
+let activeType = '3d';
+let activeCat  = 'all';
+
+function applyFilter() {
+  document.querySelectorAll('.portfolio-item').forEach(item => {
+    const typeMatch = item.dataset.type === activeType;
+    const catMatch  = activeCat === 'all' || item.dataset.cat === activeCat;
+    item.classList.toggle('visible', typeMatch && catMatch);
+  });
+}
+
+// Type tabs (3D )
+document.querySelectorAll('.type-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeType = tab.dataset.type;
+    activeCat  = 'all';
+    // reset sub-tabs
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.tab[data-filter="all"]').classList.add('active');
+    applyFilter();
+  });
+});
+
+// Category sub-tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeCat = tab.dataset.filter;
+    applyFilter();
+  });
+});
+
+// Init
+applyFilter();
+
+/* LIGHTBOX */
+function openLightbox(el) {
+  const label = el.querySelector('.portfolio-label').textContent;
+  const img = el.querySelector('img');
+  const lbContent = document.getElementById('lightboxContent');
+  document.getElementById('lightboxLabel').textContent = label;
+  if (img) {
+    lbContent.innerHTML = `<img src="${img.src}" alt="${label}">`;
+  } else {
+    const icon = el.querySelector('.portfolio-placeholder i').className;
+    lbContent.innerHTML = `<div class="lb-placeholder"><i class="${icon}"></i><p>${label}</p><small>Add your actual project image here</small></div>`;
+  }
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeLightboxBg(e) { if(e.target.id==='lightbox') closeLightbox(); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox(); });
+
+/* SKILL BARS */
+const so = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) {
+      e.target.querySelectorAll('.skill-fill').forEach(b => b.style.width = b.dataset.width+'%');
+      so.unobserve(e.target);
+    }
+  });
+}, {threshold:0.3});
+document.querySelectorAll('.skills-section').forEach(s => so.observe(s));
+
+
+</script>
+</body>
+</html>
